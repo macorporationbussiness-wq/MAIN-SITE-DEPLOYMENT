@@ -44,14 +44,11 @@ export default function TeamPortfolio() {
 
     useEffect(() => {
         const fetchPortfolio = async () => {
+            setPortfolio(null);
             setLoading(true);
             try {
-                // The slug in the URL is the portfolio's slug (from TeamMember.portfolioSlug).
-                // Fetch all portfolios and find the one matching this slug.
-                const res = await API.get('/portfolios');
-                const list = res.data || [];
-                const found = list.find((p) => p.slug === slug);
-                setPortfolio(found || null);
+                const res = await API.get(`/portfolios/${slug}`);
+                setPortfolio(res.data || null);
             } catch (err) {
                 setPortfolio(null);
             } finally {

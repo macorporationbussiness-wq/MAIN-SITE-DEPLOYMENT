@@ -38,6 +38,29 @@ router.get('/all', auth, async (req, res) => {
     }
 });
 
+// @route   GET api/portfolios/:slug
+// @desc    Get a single portfolio by slug or _id
+router.get('/:slug', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        let portfolio = await Portfolio.findOne({ slug })
+            .populate('teamMember', 'name position photo');
+        if (!portfolio) {
+            portfolio = await Portfolio.findById(slug)
+                .populate('teamMember', 'name position photo');
+        }
+        if (!portfolio) return res.status(404).json({ msg: 'Portfolio not found' });
+        res.json(portfolio);
+    } catch (err) {
+        console.error('DB unavailable, serving fallback portfolio:', err.message);
+        const item = fallbackPortfolios.find(
+            (p) => p.slug === req.params.slug || String(p._id) === req.params.slug
+        );
+        if (!item) return res.status(404).json({ msg: 'Portfolio not found' });
+        res.json(item);
+    }
+});
+
 // @route   POST api/portfolios
 // @access  Private
 router.post('/', auth, async (req, res) => {

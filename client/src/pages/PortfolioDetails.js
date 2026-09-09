@@ -34,12 +34,8 @@ export default function PortfolioDetails() {
         setP(null);
         setLoading(true);
         setCurrentImageIndex(0);
-        API.get('/portfolios')
-            .then((r) => {
-                const list = r.data || [];
-                const found = list.find((item) => item.slug === slug) || list.find((item) => String(item._id) === slug) || list[0];
-                setP(found || null);
-            })
+        API.get(`/portfolios/${slug}`)
+            .then((r) => setP(r.data || null))
             .catch(() => setP(null))
             .finally(() => setLoading(false));
     }, [slug]);
